@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import {
   Plus, X, Search, Phone, MessageCircle, Mail, Globe, Trash2, Edit3,
-  Users, FileStack, ArrowLeft, History, ChevronRight
+  Users, FileStack, ArrowLeft, History, ChevronRight, Wallet
 } from "lucide-react";
 import PasswordGate from "./components/PasswordGate.jsx";
 import LogoAndSettings, { getLogo } from "./components/LogoSettings.jsx";
+import FinanceTab from "./components/FinanceTab.jsx";
 import { supabaseConfigured } from "./lib/supabaseClient.js";
 import { fetchClients, upsertClient, deleteClientRow, fetchOrders, upsertOrder, deleteOrderRow } from "./lib/db.js";
 
@@ -543,7 +544,7 @@ function MainApp() {
   return (
     <div className="min-h-screen bg-[#EDE6D6] text-[#1C2A39] body-font">
       <header className="border-b-4 border-[#1C2A39] bg-[#F6F1E4]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <LogoAndSettings logo={logo} setLogo={setLogo} />
             <div>
@@ -552,7 +553,7 @@ function MainApp() {
             </div>
           </div>
         </div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 flex gap-1">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex gap-1">
           <button onClick={() => setTab("clients")}
             className={`flex items-center gap-2 px-4 py-2.5 border-b-4 font-semibold text-sm transition-colors ${
               tab === "clients" ? "border-[#1C2A39] text-[#1C2A39]" : "border-transparent text-[#8A8578] hover:text-[#1C2A39]"
@@ -565,10 +566,16 @@ function MainApp() {
             }`}>
             <FileStack size={15} /> Заказ
           </button>
+          <button onClick={() => setTab("finance")}
+            className={`flex items-center gap-2 px-4 py-2.5 border-b-4 font-semibold text-sm transition-colors ${
+              tab === "finance" ? "border-[#1C2A39] text-[#1C2A39]" : "border-transparent text-[#8A8578] hover:text-[#1C2A39]"
+            }`}>
+            <Wallet size={15} /> Финансы
+          </button>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         {loadError && (
           <div className="mb-4 text-sm text-[#B33A3A] bg-[#B33A3A]/10 border-2 border-[#B33A3A]/30 rounded-sm px-3 py-2">
             Не удалось синхронизировать данные: {loadError}
@@ -584,7 +591,7 @@ function MainApp() {
             onDeleteClient={removeClient}
             onOpenClientOrders={(id) => { setFocusClientId(id); setTab("orders"); }}
           />
-        ) : (
+        ) : tab === "orders" ? (
           <OrdersTab
             orders={orders}
             clients={clients}
@@ -593,6 +600,8 @@ function MainApp() {
             focusClientId={focusClientId}
             clearFocus={() => setFocusClientId(null)}
           />
+        ) : (
+          <FinanceTab clients={clients} />
         )}
       </main>
     </div>
